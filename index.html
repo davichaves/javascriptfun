@@ -16,32 +16,59 @@
    <div id="main">
       <h1>KODE</h1>
 
-      <p>Enter a kode:</p>
-      <input type="text" id="kode" placeholder="Enter kode here...">
+      <p class="pg1">Enter found kode:</p>
+      <input class="pg3" type="text" id="kode">
+      <br>
+      <button class="pg2" onclick="goToOwner()">Contact the owner</button>
+
+      <p class="pg4">You found something, contact him to return it:</p>
+
+      <form id="frm1" class="pg4">
+      <input type="text" name="name" placeholder="Name"><br>
+      <input type="text" name="email" placeholder="Email address"><br>
+      <textarea type="textfield" name="message" placeholder="Message to owner"></textarea><br><br>
+      <button onclick="form()">Submit</button>
+      </form>
 
    </div>
 
    <script type="text/javascript">
    Parse.initialize("j9u0quctQEJ5eAR6U6lIwH9TysJhgcwgl2TYdZTY", "UpMD89o6GF99Z6DwXa4me3rhKvEYnwreqi3GELye");
 
+
+   $(".pg2").hide();
+   $(".pg4").hide();
+   var foundKode;
+   var kode;
+   var query = new Parse.Query("Kode");
    $("#kode").keypress(function (e) {
       if (e.keyCode == 13) {
-         var kode = $("#kode").val();
+         kode = $("#kode").val();
+         console.log(kode);
          if (kode.length !== 6) return;
-         alert("Hello! I am an alert box!!");
+         query.each(function(object){
+            if (object.get("identifier") == kode) {
+               alert("here!");
+               console.log("Updating object: " + object.get("identifier"));
+               foundKode = object;
+               $(".pg1").hide();
+               $(".pg2").show();
+            };
+         });
+         //alert("identifier");
       }
    });
-    
-    var TestObject = Parse.Object.extend("TestObject");
-    var testObject = new TestObject();
-    testObject.save({foo: "bar"}, {
-      success: function(object) {
-        $(".success").show();
-      },
-      error: function(model, error) {
-        $(".error").show();
-      }
-    });
+
+   function goToOwner() {
+      $(".pg2").hide();
+      $(".pg3").hide();
+      $(".pg4").show();
+   }
+
+   function form() {
+      alert("Now you will be redirected to the home page!");
+   }
+
   </script>
 </body>
 
