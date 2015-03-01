@@ -21,41 +21,67 @@
       <br>
       <button class="pg2" onclick="goToOwner()">Contact the owner</button>
 
-      <p class="pg4">You found something, contact him to return it:</p>
+      <p class="pg4">You found <span id="span2"></span>'s <span id="span1"></span>, contact him to return it:</p>
 
-      <form id="frm1" class="pg4">
-      <input type="text" name="name" placeholder="Name"><br>
-      <input type="text" name="email" placeholder="Email address"><br>
-      <textarea type="textfield" name="message" placeholder="Message to owner"></textarea><br><br>
-      <button onclick="form()">Submit</button>
-      </form>
+      <input class="pg4" type="text" placeholder="Name"><br>
+      <input class="pg4" type="text" placeholder="Email address"><br>
+      <textarea class="pg4" type="textfield" placeholder="Message to owner"></textarea><br><br>
+      <button class="pg4" onclick="submitForm()">Submit</button>
 
    </div>
 
    <script type="text/javascript">
    Parse.initialize("j9u0quctQEJ5eAR6U6lIwH9TysJhgcwgl2TYdZTY", "UpMD89o6GF99Z6DwXa4me3rhKvEYnwreqi3GELye");
 
+   function submitForm() {
+      console.log(foundEmail);
+      Parse.Cloud.run('SendNotificationForFoundKode', {email: foundEmail, firstName: foundName, itemName: foundObject}, {
+        success: function(result) {
+          console.log(foundEmail);
+        },
+        error: function(error) {
+         console.log(error);
+        }
+      });
+   }
 
    $(".pg2").hide();
    $(".pg4").hide();
-   var foundKode;
+   var foundObject;
+   var foundName;
+   var foundEmail;
+   var theKode = Parse.Object.extend("Kode");
    var kode;
-   var query = new Parse.Query("Kode");
+   var query = new Parse.Query(theKode);
    $("#kode").keypress(function (e) {
       if (e.keyCode == 13) {
          kode = $("#kode").val();
          console.log(kode);
+         query.equalTo("identifier", kode);
          if (kode.length !== 6) return;
-         query.each(function(object){
-            if (object.get("identifier") == kode) {
-               alert("here!");
-               console.log("Updating object: " + object.get("identifier"));
-               foundKode = object;
-               $(".pg1").hide();
-               $(".pg2").show();
-            };
+         query.find({
+           success: function(results) {
+             if (results.length == 0) {
+               alert("Kode not found!");
+             } else{
+               for (var i = 0; i < results.length; i++) { 
+                  var object = results[i];
+                  foundObject = object.get("itemName");
+                  object.get("user").fetch({
+                    success: function(post) {
+                     foundName = post.get("firstName");
+                     foundEmail = post.get("username");
+                    }
+                  });
+                  $(".pg1").hide();
+                  $(".pg2").show();
+               }
+             };
+           },
+           error: function(error) {
+               alert("Error: " + error.code + " " + error.message);
+           }
          });
-         //alert("identifier");
       }
    });
 
@@ -63,10 +89,8 @@
       $(".pg2").hide();
       $(".pg3").hide();
       $(".pg4").show();
-   }
-
-   function form() {
-      alert("Now you will be redirected to the home page!");
+      document.getElementById('span1').innerHTML=foundObject;
+      document.getElementById('span2').innerHTML=foundName;
    }
 
   </script>

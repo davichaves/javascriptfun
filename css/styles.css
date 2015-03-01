@@ -1,17 +1,17 @@
 body {
-    background: #eee;
     text-align: center;
     padding: 0 25px;
 }
 
 #main {
-    width: 500px;
-    margin: auto;
-    text-align: left;
-    background: white;
+    /*width: 500px;*/
+    /*margin: auto;*/
+    background-image: url(background1.jpg);
+/*    text-align: left;
+    background: b;
     padding: 50px 60px;
     border: solid #ddd;
-    border-width: 0 1px 1px 1px;
+    border-width: 0 1px 1px 1px;*/
 }
 
 #main h1 {
